@@ -1,6 +1,6 @@
 import './App.css';
 
-const INSTANCE_URL = 'https://support.va-sn.dev';
+const INSTANCE_URL = 'https://demonightlywashington.service-now.com';
 const REDIRECT_URL = `${INSTANCE_URL}/sn_va_web_client_login.do?sysparm_redirect_uri=${encodeURIComponent(window.location.href)}`;
 
 
