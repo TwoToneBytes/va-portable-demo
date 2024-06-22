@@ -9,7 +9,7 @@ loadPortableVA({INSTANCE_URL, REDIRECT_URL});
 function Root() {
     return (
         <div className="App">
-            <header className="App-header">
+            <header className="header">
                 <nav>
                     <ul>
                         <li>
