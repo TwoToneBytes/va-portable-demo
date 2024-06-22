@@ -16,6 +16,10 @@ const router = createBrowserRouter([{
         {
             path: '/public',
             element: () => <div>Public</div>
+        },
+        {
+            path: '/sso',
+            element: () => <div>SSO</div>
         }
     ]
 }]);

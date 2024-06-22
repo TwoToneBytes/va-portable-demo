@@ -7,23 +7,24 @@ const REDIRECT_URL = `${INSTANCE_URL}/sn_va_web_client_login.do?sysparm_redirect
 loadPortableVA({INSTANCE_URL, REDIRECT_URL});
 
 function Root() {
-    return (<div className="App">
-        <header className="App-header">
-            <nav>
-                <ul>
-                    <li>
-                        <Link to={`/public`}>Public Virtual Agent</Link>
-                    </li>
-                    <li>
-                        <Link to={`/sso`}>Virtual Agent SSO Login</Link>
-                    </li>
-                </ul>
-            </nav>
-        </header>
-        <div id="root">
-            <Outlet/>
-        </div>
-    </div>);
+    return (
+        <div className="App">
+            <header className="App-header">
+                <nav>
+                    <ul>
+                        <li>
+                            <Link to={`/public`}>Public Virtual Agent</Link>
+                        </li>
+                        <li>
+                            <Link to={`/sso`}>Virtual Agent SSO Login</Link>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
+            <div className="main">
+                <Outlet/>
+            </div>
+        </div>);
 }
 
 export default Root;
