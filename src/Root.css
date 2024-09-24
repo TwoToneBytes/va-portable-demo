@@ -2,22 +2,25 @@
     text-align: center;
 }
 
-.App-logo {
-    height: 40vmin;
-    pointer-events: none;
-}
-
-.App-header {
+.header {
     background-color: #2e3541;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     font-size: calc(10px + 2vmin);
     color: white;
 }
 
-a.App-link {
+a {
     color: #80a3cf;
+}
+
+
+ul > li {
+    list-style-type: none;
+    text-align: left;
+    margin: 0;
+    padding: 0;
 }
