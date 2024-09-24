@@ -7,9 +7,9 @@ To see the demo go to: https://www.va-sn.dev/
 * This will auto-publish to a DO droplet
 
 
-To be added:
-* SSO Configuration
-* Enable public access to the VA
+To do list:
+- [] SSO Configuration
+- [] Enable public access to the VA
 
 ## Available Scripts
 
