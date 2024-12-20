@@ -25,6 +25,11 @@ export function loadPortableVA(options) {
 
 
     window.addEventListener('message', (e) => {
+        // prevent redirecting on the public page:
+        if (window.location.pathname === '/public') {
+            return;
+        }
+
         const isSessionUnauthenticatedEvent = e?.data?.type === 'SESSION_CREATED' && !e.data.authenticated;
         const isSessionLoggedOut = e?.data?.type === 'SESSION_LOGGED_OUT';
         if (isSessionLoggedOut || isSessionUnauthenticatedEvent) {
