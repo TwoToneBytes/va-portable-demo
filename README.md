@@ -1,6 +1,7 @@
 # Getting started
 
 This project is an example on how to embed [Portable Virtual Agent](https://docs.servicenow.com/bundle/washingtondc-servicenow-platform/page/administer/virtual-agent/concept/use-portable-va-web-client.html) in a React application. 
+
 To see the demo go to: https://www.va-sn.dev/
 
 * The DC Instance being used is: https://vasn.service-now.com
