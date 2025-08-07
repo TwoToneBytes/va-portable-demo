@@ -6,6 +6,8 @@ const INSTANCE_URL = 'https://support.va-sn.dev';
 const REDIRECT_URL = `${INSTANCE_URL}/sn_va_web_client_login.do?sysparm_redirect_uri=${encodeURIComponent(window.location.href)}`;
 loadPortableVA({INSTANCE_URL, REDIRECT_URL});
 
+alert('update!');
+
 function Root() {
     return (
         <div className="App">
