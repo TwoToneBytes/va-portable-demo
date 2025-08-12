@@ -2,7 +2,7 @@ import './Root.css';
 import {loadPortableVA} from './portable-va-loader';
 import {Link, Outlet} from "react-router-dom";
 
-const INSTANCE_URL = 'https://support.va-sn.dev';
+const INSTANCE_URL = 'https://upgradexp9toxp10.service-now.com/';
 const REDIRECT_URL = `${INSTANCE_URL}/sn_va_web_client_login.do?sysparm_redirect_uri=${encodeURIComponent(window.location.href)}`;
 loadPortableVA({INSTANCE_URL, REDIRECT_URL});
 
