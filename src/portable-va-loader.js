@@ -1,5 +1,6 @@
 let currentServiceNowChatInstance = null;
 let currentScriptElement = null;
+let currentMessageListener = null;
 
 export function loadPortableVA(options) {
     const {INSTANCE_URL, REDIRECT_URL} = options;
@@ -42,8 +43,13 @@ export function loadPortableVA(options) {
     currentScriptElement = serviceNowModule;
     document.head.appendChild(serviceNowModule);
 
+    // Remove any existing message listener to prevent memory leaks
+    if (currentMessageListener) {
+        window.removeEventListener('message', currentMessageListener);
+    }
 
-    window.addEventListener('message', (e) => {
+    // Store reference to the message listener for cleanup
+    currentMessageListener = (e) => {
         // prevent redirecting on the public page:
         if (window.location.pathname === '/public') {
             return;
@@ -57,7 +63,9 @@ export function loadPortableVA(options) {
         }
 
         console.log('Session created', {event: e.data});
-    });
+    };
+
+    window.addEventListener('message', currentMessageListener);
 }
 
 export function destroyPortableVA() {
@@ -73,5 +81,11 @@ export function destroyPortableVA() {
     if (currentScriptElement?.parentNode) {
         currentScriptElement.parentNode.removeChild(currentScriptElement);
         currentScriptElement = null;
+    }
+
+    // Remove message event listener to prevent memory leaks
+    if (currentMessageListener) {
+        window.removeEventListener('message', currentMessageListener);
+        currentMessageListener = null;
     }
 }
