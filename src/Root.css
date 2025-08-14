@@ -139,9 +139,19 @@ ul > li {
     background-color: #e68900;
 }
 
+.reset-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
 .cancel-button {
     background-color: #f44336;
     color: white;
+}
+
+.cancel-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
 }
 
 .cancel-button:hover {

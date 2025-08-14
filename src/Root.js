@@ -4,7 +4,8 @@ import {Link, Outlet} from "react-router-dom";
 import {useEffect, useState} from 'react';
 
 const DEFAULT_INSTANCE_URL = 'https://support.va-sn.dev';
-const CHAT_OPENED_EVENT_NAME = 'NOW_POPOVER#OPENED_SET';
+const CHAT_OPENED_EVENT_NAME = 'NOW_REQ_CHAT_POPOVER_OR_SELF_SERVICE#DIALOG_OPENED';
+const CHAT_CLOSED_EVENT_NAME = 'NOW_REQ_CHAT_POPOVER_OR_SELF_SERVICE#DIALOG_CLOSED';
 
 
 function Root() {
@@ -55,17 +56,20 @@ function Root() {
 
     // Listen for chat open/close events
     useEffect(() => {
-        const handleChatStateChange = (event) => {
-            const isOpen = event.detail?.payload?.value
-            if (typeof isOpen === 'boolean') {
-                setIsChatOpen(isOpen);
-            }
+        const handleChatOpened = () => {
+            setIsChatOpen(true);
         };
 
-        window.addEventListener(CHAT_OPENED_EVENT_NAME, handleChatStateChange);
+        const handleChatClosed = () => {
+            setIsChatOpen(false);
+        };
+
+        window.addEventListener(CHAT_OPENED_EVENT_NAME, handleChatOpened);
+        window.addEventListener(CHAT_CLOSED_EVENT_NAME, handleChatClosed);
 
         return () => {
-            window.removeEventListener(CHAT_OPENED_EVENT_NAME, handleChatStateChange);
+            window.removeEventListener(CHAT_OPENED_EVENT_NAME, handleChatOpened);
+            window.removeEventListener(CHAT_CLOSED_EVENT_NAME, handleChatClosed);
         };
     }, []);
 
