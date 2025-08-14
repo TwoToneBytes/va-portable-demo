@@ -17,10 +17,148 @@ a {
     color: #80a3cf;
 }
 
-
 ul > li {
     list-style-type: none;
     text-align: left;
     margin: 0;
     padding: 0;
+}
+
+/* Instance Configuration Styles */
+.instance-info {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    max-width: 600px;
+    width: 90%;
+}
+
+.current-instance {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.config-button {
+    background-color: #80a3cf;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.config-button:hover {
+    background-color: #6b8bb3;
+}
+
+.instance-config {
+    margin-top: 15px;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.config-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    text-align: left;
+}
+
+.config-form label {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+.config-form input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: white;
+    color: #333;
+}
+
+.config-form input.invalid {
+    border-color: #ff6b6b;
+    background-color: #ffe6e6;
+}
+
+.error-message {
+    color: #ff6b6b;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+.config-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+}
+
+.config-buttons button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.apply-button {
+    background-color: #4caf50;
+    color: white;
+}
+
+.apply-button:hover:not(:disabled) {
+    background-color: #45a049;
+}
+
+.apply-button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.reset-button {
+    background-color: #ff9800;
+    color: white;
+}
+
+.reset-button:hover {
+    background-color: #e68900;
+}
+
+.cancel-button {
+    background-color: #f44336;
+    color: white;
+}
+
+.cancel-button:hover {
+    background-color: #da190b;
+}
+
+@media (max-width: 600px) {
+    .current-instance {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .config-buttons {
+        flex-direction: column;
+    }
+
+    .config-buttons button {
+        width: 100%;
+    }
 }
