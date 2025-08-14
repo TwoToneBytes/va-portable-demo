@@ -116,8 +116,8 @@ function Root() {
                         </li>
                     </ul>
                 </nav>
-                <div className="instance-info">
-                    <div className="current-instance">
+                <div className="control-section">
+                    <div className="section-header">
                         <strong>Current Instance:</strong> {instanceUrl}
                         <button
                             className="config-button"
@@ -168,21 +168,26 @@ function Root() {
                         </div>
                     )}
                 </div>
-                <div>
-                    <button
-                        onClick={handleOpenChat}
-                        disabled={!chatInstance || isChatOpen}
-                        className="apply-button"
-                    >
-                        Open Chat
-                    </button>
-                    <button
-                        onClick={handleCloseChat}
-                        disabled={!chatInstance || !isChatOpen}
-                        className="reset-button"
-                    >
-                        Close Chat
-                    </button>
+                <div className="control-section">
+                    <div className="section-header">
+                        <strong>ServiceNow Chat API</strong>
+                    </div>
+                    <div className="config-buttons">
+                        <button
+                            onClick={handleOpenChat}
+                            disabled={!chatInstance || isChatOpen}
+                            className="apply-button"
+                        >
+                            Open Chat
+                        </button>
+                        <button
+                            onClick={handleCloseChat}
+                            disabled={!chatInstance || !isChatOpen}
+                            className="reset-button"
+                        >
+                            Close Chat
+                        </button>
+                    </div>
                 </div>
             </header>
             <div className="main">
