@@ -10,10 +10,11 @@ function Root() {
         return localStorage.getItem('va-instance-url') || DEFAULT_INSTANCE_URL;
     });
 
-
     const [inputUrl, setInputUrl] = useState(instanceUrl);
     const [isValidUrl, setIsValidUrl] = useState(true);
     const [showConfig, setShowConfig] = useState(false);
+    const [chatInstance, setChatInstance] = useState(null);
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     const validateUrl = (url) => {
         try {
@@ -27,7 +28,17 @@ function Root() {
     // Load portable VA when instance URL changes
     useEffect(() => {
         const REDIRECT_URL = `${instanceUrl}/sn_va_web_client_login.do?sysparm_redirect_uri=${encodeURIComponent(window.location.href)}`;
-        loadPortableVA({INSTANCE_URL: instanceUrl, REDIRECT_URL});
+
+        loadPortableVA({INSTANCE_URL: instanceUrl, REDIRECT_URL})
+            .then((instance) => {
+                setChatInstance(instance);
+                setIsChatOpen(false); // Reset chat state when new instance loads
+            })
+            .catch((error) => {
+                console.error('Failed to load ServiceNow chat:', error);
+                setChatInstance(null);
+                setIsChatOpen(false); // Reset chat state on error
+            });
 
         // Save to localStorage
         localStorage.setItem('va-instance-url', instanceUrl);
@@ -35,6 +46,8 @@ function Root() {
         // Cleanup function to destroy the instance when component unmounts or instanceUrl changes
         return () => {
             destroyPortableVA();
+            setChatInstance(null);
+            setIsChatOpen(false); // Reset chat state on cleanup
         };
     }, [instanceUrl]);
 
@@ -56,6 +69,16 @@ function Root() {
         setInstanceUrl(DEFAULT_INSTANCE_URL);
         setIsValidUrl(true);
         setShowConfig(false);
+    };
+
+    const handleOpenChat = () => {
+        chatInstance.open();
+        setIsChatOpen(true);
+    };
+
+    const handleCloseChat = () => {
+        chatInstance.close();
+        setIsChatOpen(false);
     };
 
     return (
@@ -122,6 +145,22 @@ function Root() {
                             </div>
                         </div>
                     )}
+                </div>
+                <div>
+                    <button
+                        onClick={handleOpenChat}
+                        disabled={!chatInstance || isChatOpen}
+                        className="apply-button"
+                    >
+                        Open Chat
+                    </button>
+                    <button
+                        onClick={handleCloseChat}
+                        disabled={!chatInstance || !isChatOpen}
+                        className="reset-button"
+                    >
+                        Close Chat
+                    </button>
                 </div>
             </header>
             <div className="main">
