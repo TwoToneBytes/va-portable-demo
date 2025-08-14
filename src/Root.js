@@ -1,9 +1,9 @@
 import './Root.css';
-import {loadPortableVA, destroyPortableVA} from './portable-va-loader';
+import {destroyPortableVA, loadPortableVA} from './portable-va-loader';
 import {Link, Outlet} from "react-router-dom";
- import {useState, useEffect} from 'react';
+import {useEffect, useState} from 'react';
 
-const DEFAULT_INSTANCE_URL = 'https://leexanadup10.service-now.com';
+const DEFAULT_INSTANCE_URL = 'https://support.va-sn.dev';
 
 function Root() {
     const [instanceUrl, setInstanceUrl] = useState(() => {
@@ -28,7 +28,7 @@ function Root() {
     useEffect(() => {
         const REDIRECT_URL = `${instanceUrl}/sn_va_web_client_login.do?sysparm_redirect_uri=${encodeURIComponent(window.location.href)}`;
         loadPortableVA({INSTANCE_URL: instanceUrl, REDIRECT_URL});
-        
+
         // Save to localStorage
         localStorage.setItem('va-instance-url', instanceUrl);
 
@@ -74,7 +74,7 @@ function Root() {
                 <div className="instance-info">
                     <div className="current-instance">
                         <strong>Current Instance:</strong> {instanceUrl}
-                        <button 
+                        <button
                             className="config-button"
                             onClick={() => setShowConfig(!showConfig)}
                         >
@@ -99,20 +99,20 @@ function Root() {
                                     </div>
                                 )}
                                 <div className="config-buttons">
-                                    <button 
+                                    <button
                                         onClick={handleApplyUrl}
                                         disabled={!isValidUrl || !inputUrl.trim()}
                                         className="apply-button"
                                     >
                                         Apply
                                     </button>
-                                    <button 
+                                    <button
                                         onClick={handleReset}
                                         className="reset-button"
                                     >
                                         Reset to Default
                                     </button>
-                                    <button 
+                                    <button
                                         onClick={() => setShowConfig(false)}
                                         className="cancel-button"
                                     >
