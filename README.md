@@ -1,4 +1,4 @@
-# Getting started
+# Portable Virtual Agent Implementation Example
 
 This project is an example on how to embed [Portable Virtual Agent](https://docs.servicenow.com/bundle/washingtondc-servicenow-platform/page/administer/virtual-agent/concept/use-portable-va-web-client.html) in a React application. 
 
