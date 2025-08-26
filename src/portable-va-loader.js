@@ -1,5 +1,6 @@
 let currentServiceNowChatInstance = null;
 let currentScriptElement = null;
+let currentMessageListener = null;
 
 export function loadPortableVA(options) {
     const {INSTANCE_URL, REDIRECT_URL} = options;
@@ -18,32 +19,13 @@ export function loadPortableVA(options) {
         currentScriptElement = null;
     }
 
-    const serviceNowModule = document.createElement('script');
-    serviceNowModule.type = 'module';
-    serviceNowModule.src = INSTANCE_URL + '/uxasset/externals/now-requestor-chat-popover-app/index.jsdbx?sysparm_substitute=false&uxpcb=1';
-    serviceNowModule.onload = () => {
-        currentServiceNowChatInstance = new window.ServiceNowChat({
-            instance: INSTANCE_URL,
-            context: {
-                skip_load_history: 1
-            },
-            branding: {},
-            offsetX: 50,
-            offsetY: 50,
-            position: 'right',
-            translations: {
-                'Open dialog': 'Open chat',
-                'Open Chat. {0} unread message(s)': 'Click to open',
-                'Close chat.': 'Click to close',
-            },
-        })
-    };
-    
-    currentScriptElement = serviceNowModule;
-    document.head.appendChild(serviceNowModule);
+    // Remove any existing message listener to prevent memory leaks
+    if (currentMessageListener) {
+        window.removeEventListener('message', currentMessageListener);
+    }
 
-
-    window.addEventListener('message', (e) => {
+    // Store reference to the message listener for cleanup
+    currentMessageListener = (e) => {
         // prevent redirecting on the public page:
         if (window.location.pathname === '/public') {
             return;
@@ -57,6 +39,43 @@ export function loadPortableVA(options) {
         }
 
         console.log('Session created', {event: e.data});
+    };
+
+    window.addEventListener('message', currentMessageListener);
+
+    return new Promise((resolve, reject) => {
+        const serviceNowModule = document.createElement('script');
+        serviceNowModule.type = 'module';
+        serviceNowModule.src = INSTANCE_URL + '/uxasset/externals/now-requestor-chat-popover-app/index.jsdbx?sysparm_substitute=false&uxpcb=1';
+        serviceNowModule.onload = () => {
+            try {
+                currentServiceNowChatInstance = new window.ServiceNowChat({
+                    instance: INSTANCE_URL,
+                    context: {
+                        skip_load_history: 1
+                    },
+                    branding: {},
+                    offsetX: 50,
+                    offsetY: 50,
+                    position: 'right',
+                    translations: {
+                        'Open dialog': 'Open chat',
+                        'Open Chat. {0} unread message(s)': 'Click to open',
+                        'Close chat.': 'Click to close',
+                    },
+                });
+                resolve(currentServiceNowChatInstance);
+            } catch (error) {
+                reject(error);
+            }
+        };
+        
+        serviceNowModule.onerror = () => {
+            reject(new Error('Failed to load ServiceNow chat script'));
+        };
+        
+        currentScriptElement = serviceNowModule;
+        document.head.appendChild(serviceNowModule);
     });
 }
 
@@ -73,5 +92,11 @@ export function destroyPortableVA() {
     if (currentScriptElement?.parentNode) {
         currentScriptElement.parentNode.removeChild(currentScriptElement);
         currentScriptElement = null;
+    }
+
+    // Remove message event listener to prevent memory leaks
+    if (currentMessageListener) {
+        window.removeEventListener('message', currentMessageListener);
+        currentMessageListener = null;
     }
 }
