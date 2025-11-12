@@ -3,11 +3,13 @@
     justify-content: center;
     padding: 2rem;
     min-height: calc(100vh - 200px);
+    width: 100%;
 }
 
 .page-info {
     max-width: 800px;
     width: 100%;
+    text-align: left;
 }
 
 .page-info h1 {

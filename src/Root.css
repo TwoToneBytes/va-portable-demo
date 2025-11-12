@@ -7,6 +7,11 @@
 .main {
     background-color: #2e3541;
     color: white;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem;
+    min-height: calc(100vh - 400px);
 }
 
 .header {
@@ -17,18 +22,50 @@
     justify-content: flex-start;
     font-size: calc(10px + 2vmin);
     color: white;
-    padding: 20px 0;
+    padding: 20px;
+}
+
+nav {
+    width: 100%;
+    max-width: 1200px;
+    margin-bottom: 20px;
+}
+
+nav ul {
+    display: flex;
+    gap: 2rem;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    justify-content: flex-start;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 1rem 1.5rem;
+}
+
+nav li {
+    margin: 0;
+    padding: 0;
+}
+
+nav a {
+    color: #80a3cf;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    transition: background-color 0.2s, color 0.2s;
+    display: block;
+}
+
+nav a:hover {
+    background-color: rgba(128, 163, 207, 0.2);
+    color: #a0c4e8;
 }
 
 a {
     color: #80a3cf;
-}
-
-ul > li {
-    list-style-type: none;
-    text-align: left;
-    margin: 0;
-    padding: 0;
 }
 
 /* Instance Configuration Styles */
@@ -163,6 +200,18 @@ ul > li {
 
 .cancel-button:hover {
     background-color: #da190b;
+}
+
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1rem;
+    }
+
+    nav a {
+        padding: 0.75rem 1rem;
+    }
 }
 
 @media (max-width: 600px) {
