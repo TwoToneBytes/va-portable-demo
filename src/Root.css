@@ -1,5 +1,12 @@
 .App {
     text-align: center;
+    background-color: #2e3541;
+    min-height: 100vh;
+}
+
+.main {
+    background-color: #2e3541;
+    color: white;
 }
 
 .header {
