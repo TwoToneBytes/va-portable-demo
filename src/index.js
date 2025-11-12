@@ -4,6 +4,8 @@ import {createBrowserRouter, RouterProvider} from "react-router-dom";
 
 import Root from './Root';
 import reportWebVitals from './reportWebVitals';
+import PublicPage from './PublicPage';
+import SSOPage from './SSOPage';
 
 import './index.css';
 import ErrorPage from "./ErrorPage";
@@ -15,11 +17,11 @@ const router = createBrowserRouter([{
     children: [
         {
             path: '/public',
-            element: () => <div>Public</div>
+            element: <PublicPage/>
         },
         {
             path: '/sso',
-            element: () => <div>SSO</div>
+            element: <SSOPage/>
         }
     ]
 }]);

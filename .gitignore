@@ -24,3 +24,5 @@ yarn-error.log*
 
 # webstorm
 .idea
+/.ssh/droplet_ssh_key
+/.ssh/droplet_ssh_key.pub
