@@ -4,16 +4,20 @@ import {Link, Outlet} from "react-router-dom";
 import {useEffect, useState} from 'react';
 
 const DEFAULT_INSTANCE_URL = 'https://support.va-sn.dev';
+const CHAT_OPENED_EVENT_NAME = 'NOW_REQ_CHAT_POPOVER_OR_SELF_SERVICE#DIALOG_OPENED';
+const CHAT_CLOSED_EVENT_NAME = 'NOW_REQ_CHAT_POPOVER_OR_SELF_SERVICE#DIALOG_CLOSED';
+
 
 function Root() {
     const [instanceUrl, setInstanceUrl] = useState(() => {
         return localStorage.getItem('va-instance-url') || DEFAULT_INSTANCE_URL;
     });
 
-
     const [inputUrl, setInputUrl] = useState(instanceUrl);
     const [isValidUrl, setIsValidUrl] = useState(true);
     const [showConfig, setShowConfig] = useState(false);
+    const [chatInstance, setChatInstance] = useState(null);
+    const [isChatOpen, setIsChatOpen] = useState(false);
 
     const validateUrl = (url) => {
         try {
@@ -27,7 +31,17 @@ function Root() {
     // Load portable VA when instance URL changes
     useEffect(() => {
         const REDIRECT_URL = `${instanceUrl}/sn_va_web_client_login.do?sysparm_redirect_uri=${encodeURIComponent(window.location.href)}`;
-        loadPortableVA({INSTANCE_URL: instanceUrl, REDIRECT_URL});
+
+        loadPortableVA({INSTANCE_URL: instanceUrl, REDIRECT_URL})
+            .then((instance) => {
+                setChatInstance(instance);
+                setIsChatOpen(false); // Reset chat state when new instance loads
+            })
+            .catch((error) => {
+                console.error('Failed to load ServiceNow chat:', error);
+                setChatInstance(null);
+                setIsChatOpen(false); // Reset chat state on error
+            });
 
         // Save to localStorage
         localStorage.setItem('va-instance-url', instanceUrl);
@@ -35,8 +49,29 @@ function Root() {
         // Cleanup function to destroy the instance when component unmounts or instanceUrl changes
         return () => {
             destroyPortableVA();
+            setChatInstance(null);
+            setIsChatOpen(false); // Reset chat state on cleanup
         };
     }, [instanceUrl]);
+
+    // Listen for chat open/close events
+    useEffect(() => {
+        const handleChatOpened = () => {
+            setIsChatOpen(true);
+        };
+
+        const handleChatClosed = () => {
+            setIsChatOpen(false);
+        };
+
+        window.addEventListener(CHAT_OPENED_EVENT_NAME, handleChatOpened);
+        window.addEventListener(CHAT_CLOSED_EVENT_NAME, handleChatClosed);
+
+        return () => {
+            window.removeEventListener(CHAT_OPENED_EVENT_NAME, handleChatOpened);
+            window.removeEventListener(CHAT_CLOSED_EVENT_NAME, handleChatClosed);
+        };
+    }, []);
 
     const handleUrlChange = (e) => {
         const newUrl = e.target.value;
@@ -58,6 +93,16 @@ function Root() {
         setShowConfig(false);
     };
 
+    const handleOpenChat = () => {
+        chatInstance.open();
+        setIsChatOpen(true);
+    };
+
+    const handleCloseChat = () => {
+        chatInstance.close();
+        setIsChatOpen(false);
+    };
+
     return (
         <div className="App">
             <header className="header">
@@ -71,8 +116,8 @@ function Root() {
                         </li>
                     </ul>
                 </nav>
-                <div className="instance-info">
-                    <div className="current-instance">
+                <div className="control-section">
+                    <div className="section-header">
                         <strong>Current Instance:</strong> {instanceUrl}
                         <button
                             className="config-button"
@@ -122,6 +167,27 @@ function Root() {
                             </div>
                         </div>
                     )}
+                </div>
+                <div className="control-section">
+                    <div className="section-header">
+                        <strong>ServiceNow Chat API</strong>
+                    </div>
+                    <div className="config-buttons">
+                        <button
+                            onClick={handleOpenChat}
+                            disabled={!chatInstance || isChatOpen}
+                            className="apply-button"
+                        >
+                            Open Chat
+                        </button>
+                        <button
+                            onClick={handleCloseChat}
+                            disabled={!chatInstance || !isChatOpen}
+                            className="reset-button"
+                        >
+                            Close Chat
+                        </button>
+                    </div>
                 </div>
             </header>
             <div className="main">
