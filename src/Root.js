@@ -109,6 +109,9 @@ function Root() {
                 <nav>
                     <ul>
                         <li>
+                            <Link to={`/`}>Home</Link>
+                        </li>
+                        <li>
                             <Link to={`/public`}>Public Virtual Agent</Link>
                         </li>
                         <li>

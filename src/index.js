@@ -6,6 +6,7 @@ import Root from './Root';
 import reportWebVitals from './reportWebVitals';
 import PublicPage from './PublicPage';
 import SSOPage from './SSOPage';
+import HomePage from './HomePage';
 
 import './index.css';
 import ErrorPage from "./ErrorPage";
@@ -15,6 +16,10 @@ const router = createBrowserRouter([{
     element: <Root/>,
     errorElement: <ErrorPage/>,
     children: [
+        {
+            index: true,
+            element: <HomePage/>
+        },
         {
             path: '/public',
             element: <PublicPage/>
