@@ -7,6 +7,42 @@ const DEFAULT_INSTANCE_URL = 'https://support.va-sn.dev';
 const CHAT_OPENED_EVENT_NAME = 'NOW_REQ_CHAT_POPOVER_OR_SELF_SERVICE#DIALOG_OPENED';
 const CHAT_CLOSED_EVENT_NAME = 'NOW_REQ_CHAT_POPOVER_OR_SELF_SERVICE#DIALOG_CLOSED';
 
+// Extract the domain and top-level domain from a URL
+const getDomainParts = (url) => {
+    try {
+        const urlObj = new URL(url);
+        const hostnameParts = urlObj.hostname.split('.');
+
+        // Get the domain (last two parts: domain.tld)
+        if (hostnameParts.length >= 2) {
+            const tld = hostnameParts[hostnameParts.length - 1];
+            const domain = hostnameParts[hostnameParts.length - 2];
+            return {domain, tld, fullDomain: `${domain}.${tld}`};
+        }
+        return null;
+    } catch {
+        return null;
+    }
+};
+
+// Check if two URLs have the same top-level domain
+const isSameDomain = (url1, url2) => {
+    const domain1 = getDomainParts(url1);
+    const domain2 = getDomainParts(url2);
+
+    if (!domain1 || !domain2) return false;
+
+    return domain1.fullDomain === domain2.fullDomain;
+};
+
+const validateUrl = (url) => {
+    try {
+        const urlObj = new URL(url);
+        return urlObj.protocol === 'https:' && urlObj.hostname.includes('.');
+    } catch {
+        return false;
+    }
+};
 
 function Root() {
     const [instanceUrl, setInstanceUrl] = useState(() => {
@@ -15,18 +51,14 @@ function Root() {
 
     const [inputUrl, setInputUrl] = useState(instanceUrl);
     const [isValidUrl, setIsValidUrl] = useState(true);
+    const [showCrossDomainWarning, setShowCrossDomainWarning] = useState(false);
+
     const [showConfig, setShowConfig] = useState(false);
+
     const [chatInstance, setChatInstance] = useState(null);
+
     const [isChatOpen, setIsChatOpen] = useState(false);
 
-    const validateUrl = (url) => {
-        try {
-            const urlObj = new URL(url);
-            return urlObj.protocol === 'https:' && urlObj.hostname.includes('.');
-        } catch {
-            return false;
-        }
-    };
 
     // Load portable VA when instance URL changes
     useEffect(() => {
@@ -76,7 +108,18 @@ function Root() {
     const handleUrlChange = (e) => {
         const newUrl = e.target.value;
         setInputUrl(newUrl);
-        setIsValidUrl(validateUrl(newUrl));
+
+        const isValid = validateUrl(newUrl);
+        setIsValidUrl(isValid);
+
+        // Check if the new URL is on a different domain
+        if (isValid) {
+            const currentSiteUrl = window.location.href;
+            const isDifferentDomain = !isSameDomain(newUrl, currentSiteUrl);
+            setShowCrossDomainWarning(isDifferentDomain);
+        } else {
+            setShowCrossDomainWarning(false);
+        }
     };
 
     const handleApplyUrl = () => {
@@ -144,6 +187,16 @@ function Root() {
                                 {!isValidUrl && (
                                     <div className="error-message">
                                         Please enter a valid HTTPS URL (e.g., https://your-instance.service-now.com)
+                                    </div>
+                                )}
+                                {isValidUrl && showCrossDomainWarning && (
+                                    <div className="warning-message">
+                                        <strong>⚠️ Cross-Domain Warning:</strong> The instance URL you've entered is on
+                                        a different domain than this site.
+                                        This may cause issues with third-party cookies, which could prevent
+                                        authentication and session management from working properly.
+                                        Additionally, certain browser modes (such as incognito/private browsing) will
+                                        not work at all due to stricter cookie policies.
                                     </div>
                                 )}
                                 <div className="config-buttons">
