@@ -1,6 +1,10 @@
 import './PageInfo.css';
+import {usePortableVA} from './usePortableVA';
 
 function PublicPage() {
+    // manageNowLogin: false — guest access, never redirects to SSO login.
+    usePortableVA(false);
+
     return (
         <div className="page-container">
             <div className="page-info">

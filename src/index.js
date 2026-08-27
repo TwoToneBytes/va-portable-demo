@@ -7,6 +7,8 @@ import reportWebVitals from './reportWebVitals';
 import PublicPage from './PublicPage';
 import SSOPage from './SSOPage';
 import HomePage from './HomePage';
+import PublicEnhancedChatPage from './PublicEnhancedChatPage';
+import AuthenticatedEnhancedChatPage from './AuthenticatedEnhancedChatPage';
 
 import './index.css';
 import ErrorPage from "./ErrorPage";
@@ -27,6 +29,14 @@ const router = createBrowserRouter([{
         {
             path: '/sso',
             element: <SSOPage/>
+        },
+        {
+            path: '/public-enhanced-chat',
+            element: <PublicEnhancedChatPage/>
+        },
+        {
+            path: '/authenticated-enhanced-chat',
+            element: <AuthenticatedEnhancedChatPage/>
         }
     ]
 }]);
