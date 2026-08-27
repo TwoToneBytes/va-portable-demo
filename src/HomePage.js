@@ -1,7 +1,12 @@
 import React from 'react';
 import './PageInfo.css';
+import {usePortableVA} from './usePortableVA';
 
 function HomePage() {
+    // manageNowLogin: true — matches the "applies to all pages except the
+    // Public Virtual Agent page" behavior documented below.
+    usePortableVA(true);
+
     return (
         <div className="page-info">
             <h1>Portable Virtual Agent Demo</h1>

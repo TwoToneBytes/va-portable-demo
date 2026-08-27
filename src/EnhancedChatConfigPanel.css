@@ -1,0 +1,166 @@
+.config-section-title {
+    color: #a0c4e8;
+    margin: 0 0 1rem;
+    font-size: 0.95rem;
+}
+
+.config-lab-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    max-width: 800px;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 1.5rem;
+}
+
+.field-group {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    padding: 1rem 1.25rem 1.25rem;
+}
+
+.field-group summary {
+    color: #a0c4e8;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0.15rem 0;
+}
+
+.field-group[open] summary {
+    margin-bottom: 1rem;
+}
+
+.field-group-hint {
+    color: #d0d0d0;
+    font-size: 0.9rem;
+    margin: 0 0 0.75rem;
+}
+
+.field-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1rem;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.field label {
+    font-size: 0.85rem;
+    font-weight: bold;
+    color: #e0e0e0;
+}
+
+.field input,
+.field select {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: white;
+    color: #333;
+}
+
+.field input.invalid {
+    border-color: #ff6b6b;
+    background-color: #ffe6e6;
+}
+
+.field-error {
+    color: #ff6b6b;
+    font-size: 12px;
+}
+
+.checkbox-field label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: normal;
+    color: #e0e0e0;
+}
+
+.checkbox-field input {
+    width: auto;
+}
+
+.color-field-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.color-field-row input {
+    flex: 1;
+    min-width: 0;
+}
+
+.color-swatch {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
+}
+
+.context-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.context-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.context-row input {
+    flex: 1;
+    min-width: 120px;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    background-color: white;
+    color: #333;
+}
+
+.config-preview-wrap {
+    margin-top: 15px;
+    text-align: left;
+}
+
+.config-preview-wrap h4 {
+    color: #a0c4e8;
+    margin: 0 0 0.5rem;
+    font-size: 0.95rem;
+}
+
+.config-preview {
+    background: rgba(0, 0, 0, 0.35);
+    color: #d0d0d0;
+    padding: 1rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+.applied-config-hint {
+    text-align: left;
+    font-size: 13px;
+    color: #a0c4e8;
+}
+
+@media (max-width: 600px) {
+    .field-grid {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,6 +1,11 @@
 import './PageInfo.css';
+import {usePortableVA} from './usePortableVA';
 
 function SSOPage() {
+    // manageNowLogin: true — redirects to SSO login on an unauthenticated
+    // or logged-out session.
+    usePortableVA(true);
+
     return (
         <div className="page-container">
             <div className="page-info">

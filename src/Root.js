@@ -1,11 +1,20 @@
 import './Root.css';
-import {destroyPortableVA, loadPortableVA} from './portable-va-loader';
-import {Link, Outlet} from "react-router-dom";
+import {Link, Outlet, useLocation} from "react-router-dom";
 import {useEffect, useState} from 'react';
+import EnhancedChatConfigPanel from './EnhancedChatConfigPanel';
 
-const DEFAULT_INSTANCE_URL = 'https://support.va-sn.dev';
+const DEFAULT_PORTABLE_INSTANCE_URL = 'https://support.va-sn.dev';
+const DEFAULT_ENHANCED_CHAT_INSTANCE_URL = 'https://nwjanus02.service-now.com';
+const PORTABLE_INSTANCE_URL_STORAGE_KEY = 'va-instance-url';
+const ENHANCED_CHAT_INSTANCE_URL_STORAGE_KEY = 'va-enhanced-chat-instance-url';
+const PUBLIC_ENHANCED_CHAT_PATH = '/public-enhanced-chat';
+const AUTHENTICATED_ENHANCED_CHAT_PATH = '/authenticated-enhanced-chat';
+const ENHANCED_CHAT_PATHS = [PUBLIC_ENHANCED_CHAT_PATH, AUTHENTICATED_ENHANCED_CHAT_PATH];
 const CHAT_OPENED_EVENT_NAME = 'NOW_REQ_CHAT_POPOVER_OR_SELF_SERVICE#DIALOG_OPENED';
 const CHAT_CLOSED_EVENT_NAME = 'NOW_REQ_CHAT_POPOVER_OR_SELF_SERVICE#DIALOG_CLOSED';
+// Enhanced Chat dispatches its own namespaced CustomEvent instead — see
+// "Events" in docs/enhanced-chat-docs.md.
+const ENHANCED_CHAT_OPEN_CHANGE_EVENT_NAME = 'now-embedded.open-change';
 
 // Extract the domain and top-level domain from a URL
 const getDomainParts = (url) => {
@@ -45,9 +54,22 @@ const validateUrl = (url) => {
 };
 
 function Root() {
-    const [instanceUrl, setInstanceUrl] = useState(() => {
-        return localStorage.getItem('va-instance-url') || DEFAULT_INSTANCE_URL;
+    const location = useLocation();
+    const isEnhancedChatRoute = ENHANCED_CHAT_PATHS.includes(location.pathname);
+
+    // Enhanced Chat and the portable VA each remember their own instance URL,
+    // so switching between those route families doesn't clobber the other's setting.
+    const [portableInstanceUrl, setPortableInstanceUrl] = useState(() => {
+        return localStorage.getItem(PORTABLE_INSTANCE_URL_STORAGE_KEY) || DEFAULT_PORTABLE_INSTANCE_URL;
     });
+    const [enhancedChatInstanceUrl, setEnhancedChatInstanceUrl] = useState(() => {
+        return localStorage.getItem(ENHANCED_CHAT_INSTANCE_URL_STORAGE_KEY) || DEFAULT_ENHANCED_CHAT_INSTANCE_URL;
+    });
+
+    const defaultInstanceUrl = isEnhancedChatRoute ? DEFAULT_ENHANCED_CHAT_INSTANCE_URL : DEFAULT_PORTABLE_INSTANCE_URL;
+    const instanceUrlStorageKey = isEnhancedChatRoute ? ENHANCED_CHAT_INSTANCE_URL_STORAGE_KEY : PORTABLE_INSTANCE_URL_STORAGE_KEY;
+    const instanceUrl = isEnhancedChatRoute ? enhancedChatInstanceUrl : portableInstanceUrl;
+    const setInstanceUrl = isEnhancedChatRoute ? setEnhancedChatInstanceUrl : setPortableInstanceUrl;
 
     const [inputUrl, setInputUrl] = useState(instanceUrl);
     const [isValidUrl, setIsValidUrl] = useState(true);
@@ -59,35 +81,44 @@ function Root() {
 
     const [isChatOpen, setIsChatOpen] = useState(false);
 
-
-    // Load portable VA when instance URL changes
+    // Keep the config form's text input in sync when the active instance URL
+    // changes for a reason other than typing - e.g. navigating between a
+    // portable VA route and an Enhanced Chat route, each with its own value.
     useEffect(() => {
-        const REDIRECT_URL = `${instanceUrl}/sn_va_web_client_login.do?sysparm_redirect_uri=${encodeURIComponent(window.location.href)}`;
-
-        loadPortableVA({INSTANCE_URL: instanceUrl, REDIRECT_URL})
-            .then((instance) => {
-                setChatInstance(instance);
-                setIsChatOpen(false); // Reset chat state when new instance loads
-            })
-            .catch((error) => {
-                console.error('Failed to load ServiceNow chat:', error);
-                setChatInstance(null);
-                setIsChatOpen(false); // Reset chat state on error
-            });
-
-        // Save to localStorage
-        localStorage.setItem('va-instance-url', instanceUrl);
-
-        // Cleanup function to destroy the instance when component unmounts or instanceUrl changes
-        return () => {
-            destroyPortableVA();
-            setChatInstance(null);
-            setIsChatOpen(false); // Reset chat state on cleanup
-        };
+        setInputUrl(instanceUrl);
+        setIsValidUrl(true);
+        setShowCrossDomainWarning(false);
     }, [instanceUrl]);
 
-    // Listen for chat open/close events
+    // Persist the active instance URL. Root no longer loads either widget
+    // itself - every route's page owns its own widget's load/destroy
+    // lifecycle (see usePortableVA / useEnhancedChatContainer) and hands the
+    // resulting instance back up via the Outlet context below.
     useEffect(() => {
+        localStorage.setItem(instanceUrlStorageKey, instanceUrl);
+    }, [instanceUrl, instanceUrlStorageKey]);
+
+    // Pages set/clear chatInstance themselves; reset the open state whenever
+    // the active instance changes, regardless of which widget set it.
+    useEffect(() => {
+        setIsChatOpen(false);
+    }, [chatInstance]);
+
+    // Listen for chat open/close events. Enhanced Chat and the portable VA
+    // widget report this via different events, so pick the pair that matches
+    // the current route's widget.
+    useEffect(() => {
+        if (isEnhancedChatRoute) {
+            const handleOpenChange = (e) => {
+                setIsChatOpen(Boolean(e.detail?.opened));
+            };
+
+            document.addEventListener(ENHANCED_CHAT_OPEN_CHANGE_EVENT_NAME, handleOpenChange);
+            return () => {
+                document.removeEventListener(ENHANCED_CHAT_OPEN_CHANGE_EVENT_NAME, handleOpenChange);
+            };
+        }
+
         const handleChatOpened = () => {
             setIsChatOpen(true);
         };
@@ -103,7 +134,7 @@ function Root() {
             window.removeEventListener(CHAT_OPENED_EVENT_NAME, handleChatOpened);
             window.removeEventListener(CHAT_CLOSED_EVENT_NAME, handleChatClosed);
         };
-    }, []);
+    }, [isEnhancedChatRoute]);
 
     const handleUrlChange = (e) => {
         const newUrl = e.target.value;
@@ -130,8 +161,8 @@ function Root() {
     };
 
     const handleReset = () => {
-        setInputUrl(DEFAULT_INSTANCE_URL);
-        setInstanceUrl(DEFAULT_INSTANCE_URL);
+        setInputUrl(defaultInstanceUrl);
+        setInstanceUrl(defaultInstanceUrl);
         setIsValidUrl(true);
         setShowConfig(false);
     };
@@ -159,6 +190,12 @@ function Root() {
                         </li>
                         <li>
                             <Link to={`/sso`}>Virtual Agent SSO Login</Link>
+                        </li>
+                        <li>
+                            <Link to={PUBLIC_ENHANCED_CHAT_PATH}>Public Enhanced Chat</Link>
+                        </li>
+                        <li>
+                            <Link to={AUTHENTICATED_ENHANCED_CHAT_PATH}>Authenticated Enhanced Chat</Link>
                         </li>
                     </ul>
                 </nav>
@@ -223,6 +260,14 @@ function Root() {
                             </div>
                         </div>
                     )}
+                    {isEnhancedChatRoute && (
+                        <EnhancedChatConfigPanel
+                            instanceUrl={enhancedChatInstanceUrl}
+                            onChatInstanceChange={setChatInstance}
+                            isOpen={showConfig}
+                            onClose={() => setShowConfig(false)}
+                        />
+                    )}
                 </div>
                 <div className="control-section">
                     <div className="section-header">
@@ -247,7 +292,7 @@ function Root() {
                 </div>
             </header>
             <div className="main">
-                <Outlet/>
+                <Outlet context={{instanceUrl, onChatInstanceChange: setChatInstance}}/>
             </div>
         </div>
     );

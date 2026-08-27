@@ -3,7 +3,7 @@ let currentScriptElement = null;
 let currentMessageListener = null;
 
 export function loadPortableVA(options) {
-    const {INSTANCE_URL, REDIRECT_URL} = options;
+    const {INSTANCE_URL, REDIRECT_URL, MANAGE_NOW_LOGIN = false} = options;
 
     if (currentServiceNowChatInstance) {
         try {
@@ -26,8 +26,10 @@ export function loadPortableVA(options) {
 
     // Store reference to the message listener for cleanup
     currentMessageListener = (e) => {
-        // prevent redirecting on the public page:
-        if (window.location.pathname === '/public') {
+        // MANAGE_NOW_LOGIN mirrors the same-named concept in
+        // enhanced-va-loader.js: the caller opts in per page, instead of
+        // this loader guessing from the current route.
+        if (!MANAGE_NOW_LOGIN) {
             return;
         }
 
