@@ -28,9 +28,9 @@ function EnhancedChatConfigPanel({instanceUrl, onChatInstanceChange, isOpen, onC
     // Mount point for the widget this panel constructs - kept outside the
     // isOpen-gated form markup below (rendered unconditionally, same as
     // useEnhancedChatContainer's pages) so the widget's DOM isn't torn down
-    // just because the form collapses after a successful Apply. Scoping
-    // `color` here, rather than on .main/.header, only darkens this widget's
-    // inherited text - it doesn't touch the rest of the app.
+    // just because the form collapses after a successful Apply. Header
+    // title color, if set, comes from the branding.header.titleColor field
+    // below rather than page CSS.
     const containerRef = useRef(null);
     const [values, setValues] = useState(() => createDefaultValues(instanceUrl));
     const [contextRows, setContextRows] = useState([]);
@@ -175,7 +175,7 @@ function EnhancedChatConfigPanel({instanceUrl, onChatInstanceChange, isOpen, onC
             {/* Enhanced Chat mounts here once Apply succeeds - kept outside
                 the isOpen-gated form below so collapsing the form doesn't
                 unmount (and destroy) the widget's own DOM. */}
-            <div ref={containerRef} style={{display: 'contents', color: '#1e3a5f'}}/>
+            <div ref={containerRef} style={{display: 'contents'}}/>
 
             {loadError && (
                 <div className="warning-message">

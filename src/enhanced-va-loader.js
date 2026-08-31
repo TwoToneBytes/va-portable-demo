@@ -14,7 +14,7 @@ function destroyCurrentInstance() {
 }
 
 async function importEnhancedChat(instanceUrl) {
-    const moduleUrl = `${instanceUrl}/uxasset/externals/embedded-enhanced-chat/index.jsdbx?sysparm_substitute=false`;
+    const moduleUrl = `${instanceUrl}/uxasset/externals/embedded-enhanced-chat/index.jsdbx?sysparm_substitute=false&uxpcb=1`;
 
     // webpackIgnore keeps this as a native dynamic import so the browser's
     // ES module loader fetches the remote module directly, instead of
@@ -24,7 +24,7 @@ async function importEnhancedChat(instanceUrl) {
 }
 
 export async function loadEnhancedVA(options) {
-    const {INSTANCE_URL, PORTAL = 'sp', MANAGE_NOW_LOGIN = false, CONTAINER} = options;
+    const {INSTANCE_URL, PORTAL = 'sp', MANAGE_NOW_LOGIN = false, CONTAINER, TITLE_COLOR} = options;
 
     destroyCurrentInstance();
 
@@ -48,6 +48,11 @@ export async function loadEnhancedVA(options) {
         // want the widget's lifecycle scoped to a specific view (destroyed
         // when that view unmounts) pass their own mount node instead.
         ...(CONTAINER ? {container: CONTAINER} : {}),
+        // Sets the header title's text color via the widget's own
+        // branding.header.titleColor config (see docs/enhanced-chat-docs.md)
+        // instead of relying on the mount container inheriting a color from
+        // page CSS.
+        ...(TITLE_COLOR ? {branding: {header: {titleColor: TITLE_COLOR}}} : {}),
     });
 
     return currentEnhancedChatInstance;
