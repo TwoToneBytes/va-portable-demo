@@ -22,6 +22,11 @@ export function useEnhancedChatContainer(manageNowLogin) {
             INSTANCE_URL: instanceUrl,
             MANAGE_NOW_LOGIN: manageNowLogin,
             CONTAINER: containerRef.current,
+            // Widget's default header title color isn't legible against
+            // this app's white .main/.header background — set it via the
+            // widget's own branding.header.titleColor config rather than
+            // overriding it with page CSS.
+            TITLE_COLOR: '#1e3a5f',
         })
             .then((instance) => {
                 if (isCurrent) {

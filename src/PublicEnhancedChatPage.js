@@ -45,10 +45,10 @@ function PublicEnhancedChatPage() {
             </div>
             {/* Enhanced Chat mounts here (see useEnhancedChatContainer) instead
                 of document.body, so it's destroyed when this page unmounts.
-                color is scoped to just this container so the widget inherits
-                a darker default text color, without touching .main/.header's
-                white text for the rest of the app. */}
-            <div ref={chatContainerRef} style={{display: 'contents', color: '#1e3a5f'}}/>
+                Header title color is set via the widget's own
+                branding.header.titleColor config (see useEnhancedChatContainer),
+                not page CSS. */}
+            <div ref={chatContainerRef} style={{display: 'contents'}}/>
         </div>
     );
 }
