@@ -73,6 +73,7 @@ export const FIELD_GROUPS = [
         title: 'Branding — Header',
         fields: [
             {path: 'branding.header.iconColor', label: 'Title Icon Color', type: 'color'},
+            {path: 'branding.header.titleColor', label: 'Title Text Color', type: 'color'},
             {path: 'branding.header.titleIcon', label: 'Title Icon URL', type: 'url'},
             {path: 'branding.header.buttonColor', label: 'Button Color', type: 'color'},
             {path: 'branding.header.buttonColorActive', label: 'Button Color (active)', type: 'color'},

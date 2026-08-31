@@ -125,6 +125,7 @@ branding: <object> - colors accept any valid CSS color value (hex, rgb(), a name
             '0 4px 12px rgba(0,0,0,0.2)'.
     header: <object> - the header bar inside the panel (title, and its
         expand/pin/close buttons).
+        titleColor: <string> - title text color.
         iconColor: <string> - title icon color.
         titleIcon: <string> - URL of a custom title icon (default: a sparkle).
         buttonColor: <string> - expand/pin/close buttons' icon color, default
@@ -200,13 +201,21 @@ now-embedded.open-change     - detail: { opened: boolean, actionSysId?: string }
     button, or chat.open()/close(). `actionSysId`, when present, points the
     iframe at the topic of a pending proactive-trigger nudge.
 now-embedded.position-change - detail: { position: 'modal' | 'pinned' | undefined }.
-    Fires when a visitor toggles the header's pin/expand buttons.
+    Fires when a visitor toggles the header's pin/expand buttons. `position`
+    is a preference that persists across close/reopen (closing a pinned
+    panel does NOT fire this event or reset `chat.position` -- reopening
+    comes back pinned), so don't drive pinned-layout CSS off this event
+    alone: also recompute on `open-change`, and gate on `chat.opened` too,
+    or a closed-but-still-"pinned" chat will leave layout space (e.g. a
+    reserved margin) reserved for a panel that isn't on screen.
 ```
 
 ```js
-document.addEventListener('now-embedded.position-change', (e) => {
-  document.body.classList.toggle('has-pinned-chat', e.detail.position === 'pinned');
-});
+const updatePinnedLayout = () => {
+  document.body.classList.toggle('has-pinned-chat', chat.position === 'pinned' && chat.opened);
+};
+document.addEventListener('now-embedded.position-change', updatePinnedLayout);
+document.addEventListener('now-embedded.open-change', updatePinnedLayout);
 ```
 
 ## Advanced: CSS custom properties
@@ -223,7 +232,7 @@ precedence over your CSS: the config-driven inline style wins.
 | Custom property | Default | Set by |
 | --- | --- | --- |
 | `--now-embedded-chat-launcher-bg-color` | `linear-gradient(135deg, rgb(134, 246, 115) 5%, rgb(113, 213, 254) 95%)` | `branding.launcher.bgColor` |
-| `--now-embedded-chat-launcher-bg-color-hover` | `#33383d` | `branding.launcher.bgColorHover` |
+| `--now-embedded-chat-launcher-bg-color-hover` | `rgb(134, 246, 115)` | `branding.launcher.bgColorHover` |
 | `--now-embedded-chat-launcher-bg-color-active` | current bg color | `branding.launcher.bgColorActive` |
 | `--now-embedded-chat-launcher-color` | `#fff` | `branding.launcher.color` |
 | `--now-embedded-chat-launcher-color-hover` | `#fff` | `branding.launcher.colorHover` |
@@ -233,6 +242,7 @@ precedence over your CSS: the config-driven inline style wins.
 | `--now-embedded-chat-bg-color` | `#f4f5f7` (`#fff` in modal) | `branding.panel.bgColor` |
 | `--now-embedded-chat-panel-border` | `1px solid rgb(209, 213, 219)` | `branding.panel.border` |
 | `--now-embedded-chat-panel-shadow` | `0 0.75rem 1.5rem 0 rgba(0,0,0,0.25)` | `branding.panel.shadow` |
+| `--now-embedded-chat-header-title-color` | `#1c2124` | `branding.header.titleColor` |
 | `--now-embedded-chat-header-icon-color` | `#6a3bff` | `branding.header.iconColor` |
 | `--now-embedded-chat-header-button-color` | `#4a4f54` | `branding.header.buttonColor` |
 | `--now-embedded-chat-header-button-color-active` | `#1c2124` | `branding.header.buttonColorActive` |
@@ -299,9 +309,13 @@ won't see a badge.
   document.getElementById('chat-open-btn').addEventListener('click', () => chat.open());
   document.getElementById('chat-close-btn').addEventListener('click', () => chat.close());
 
-  document.addEventListener('now-embedded.position-change', (e) => {
-    document.body.classList.toggle('has-pinned-chat', e.detail.position === 'pinned');
-  });
+  // Gate on both `position` and `opened` -- see the `position-change` note
+  // above -- so closing a pinned chat releases the reserved layout space.
+  const updatePinnedLayout = () => {
+    document.body.classList.toggle('has-pinned-chat', chat.position === 'pinned' && chat.opened);
+  };
+  document.addEventListener('now-embedded.position-change', updatePinnedLayout);
+  document.addEventListener('now-embedded.open-change', updatePinnedLayout);
 </script>
 ```
 
